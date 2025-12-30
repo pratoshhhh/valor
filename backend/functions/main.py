@@ -23,6 +23,82 @@ report_generator = ReportGenerator(db)
 confluent_metrics = ConfluentMetrics()
 
 @functions_framework.http
+def get_health_alerts(request):
+    """Get all active health alerts"""
+    try:
+        # Get filter parameters
+        severity = request.args.get('severity')  # Optional: HIGH, CRITICAL
+        soldier_id = request.args.get('soldier_id')  # Optional
+        status = request.args.get('status', 'ACTIVE')  # Default to ACTIVE
+        
+        # Query Firestore
+        alerts_ref = db.collection('health_alerts')
+        query = alerts_ref.where('status', '==', status)
+        
+        if severity:
+            query = query.where('severity', '==', severity)
+        
+        if soldier_id:
+            query = query.where('soldier_id', '==', soldier_id)
+        
+        # Order by timestamp, most recent first
+        query = query.order_by('created_at', direction=firestore.Query.DESCENDING)
+        
+        alerts = []
+        for doc in query.stream():
+            alert = doc.to_dict()
+            alert['alert_id'] = doc.id
+            alerts.append(alert)
+        
+        return jsonify({
+            'status': 'success',
+            'count': len(alerts),
+            'alerts': alerts
+        }), 200
+        
+    except Exception as e:
+        print(f"Error fetching alerts: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@functions_framework.http
+def resolve_alert(request):
+    """Mark a health alert as resolved"""
+    try:
+        request_json = request.get_json(silent=True)
+        
+        if not request_json or 'alert_id' not in request_json:
+            return jsonify({'error': 'alert_id required'}), 400
+        
+        alert_id = request_json['alert_id']
+        resolution_notes = request_json.get('notes', '')
+        resolved_by = request_json.get('resolved_by', 'System')
+        
+        # Update the alert
+        alert_ref = db.collection('health_alerts').document(alert_id)
+        alert_doc = alert_ref.get()
+        
+        if not alert_doc.exists:
+            return jsonify({'error': 'Alert not found'}), 404
+        
+        alert_ref.update({
+            'status': 'RESOLVED',
+            'resolved_at': firestore.SERVER_TIMESTAMP,
+            'resolved_by': resolved_by,
+            'resolution_notes': resolution_notes
+        })
+        
+        return jsonify({
+            'status': 'success',
+            'message': 'Alert resolved',
+            'alert_id': alert_id
+        }), 200
+        
+    except Exception as e:
+        print(f"Error resolving alert: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@functions_framework.http
 def get_confluent_metrics(request):
     """HTTP endpoint to get Confluent Cloud metrics"""
     try:
