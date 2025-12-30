@@ -22,6 +22,31 @@ ai_analyzer = AIAnalyzer()
 report_generator = ReportGenerator(db)
 confluent_metrics = ConfluentMetrics()
 
+@functions_framework.http
+def get_confluent_metrics(request):
+    """HTTP endpoint to get Confluent Cloud metrics"""
+    try:
+        metric_type = request.args.get('type', 'health')
+        
+        if metric_type == 'cluster':
+            metrics = confluent_metrics.get_cluster_metrics()
+        elif metric_type == 'topics':
+            metrics = confluent_metrics.get_all_topics_metrics()
+        elif metric_type == 'consumers':
+            metrics = confluent_metrics.get_consumer_groups_metrics()
+        elif metric_type == 'health':
+            metrics = confluent_metrics.get_health_status()
+        else:
+            return jsonify({'error': 'Invalid metric type'}), 400
+        
+        return jsonify({
+            'status': 'success',
+            'data': metrics
+        }), 200
+        
+    except Exception as e:
+        print(f"Error fetching metrics: {e}")
+        return jsonify({'error': str(e)}), 500
 
 @functions_framework.http
 def ingest_events(request):
