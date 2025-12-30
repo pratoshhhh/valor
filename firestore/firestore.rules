@@ -1,3 +1,30 @@
-mkdir -p firestore
-nano firestore/firestore.rules
-# Paste the rules
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Soldiers collection - read-only for demo
+    match /soldiers/{soldierId} {
+      allow read: if true;
+      allow write: if false;  // Only backend can write
+      
+      match /service_record/{eventId} {
+        allow read: if true;
+        allow write: if false;
+      }
+    }
+    
+    // Health alerts
+    match /health_alerts/{alertId} {
+      allow read: if true;
+      allow update: if request.resource.data.diff(resource.data)
+                      .affectedKeys().hasOnly(['resolved', 'resolved_at']);
+      allow create, delete: if false;
+    }
+    
+    // VA Reports - read-only
+    match /va_reports/{reportId} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}
