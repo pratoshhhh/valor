@@ -22,6 +22,10 @@ SCHEMA_REGISTRY_CONFIG = {
     'basic.auth.user.info': f"{os.getenv('CONFLUENT_SCHEMA_REGISTRY_API_KEY')}:{os.getenv('CONFLUENT_SCHEMA_REGISTRY_API_SECRET')}"
 }
 
+# GCP Configuration - ADD THESE TWO LINES
+GCP_PROJECT_ID = os.getenv('GCP_PROJECT_ID', 'valorstream-demo-1')
+GCP_REGION = os.getenv('GCP_REGION', 'us-east1')
+
 # Debug: print to verify loading
 if not os.getenv('CONFLUENT_SCHEMA_REGISTRY_URL'):
     print("❌ ERROR: CONFLUENT_SCHEMA_REGISTRY_URL not found in .env")
