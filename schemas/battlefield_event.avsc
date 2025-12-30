@@ -1,0 +1,39 @@
+{
+  "type": "record",
+  "name": "BattlefieldEvent",
+  "namespace": "com.valorstream.events",
+  "fields": [
+    {"name": "event_id", "type": "string", "doc": "Unique identifier"},
+    {"name": "soldier_id", "type": "string", "doc": "Soldier identifier"},
+    {"name": "timestamp", "type": "long", "logicalType": "timestamp-millis"},
+    {"name": "latitude", "type": "double"},
+    {"name": "longitude", "type": "double"},
+    {
+      "name": "event_type",
+      "type": {
+        "type": "enum",
+        "name": "EventType",
+        "symbols": [
+          "IED_EXPLOSION", "GUNFIRE", "BURN_PIT_EXPOSURE",
+          "TOXIC_SMOKE", "TRAINING_EXERCISE", "ROUTINE_PATROL",
+          "BLAST_INJURY", "VEHICLE_ACCIDENT"
+        ]
+      }
+    },
+    {
+      "name": "severity",
+      "type": {
+        "type": "enum",
+        "name": "Severity",
+        "symbols": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+      }
+    },
+    {"name": "noise_level_db", "type": ["null", "double"], "default": null},
+    {"name": "air_quality_index", "type": ["null", "int"], "default": null},
+    {"name": "device_id", "type": ["null", "string"], "default": null},
+    {"name": "device_type", "type": ["null", "string"], "default": null},
+    {"name": "device_manufacturer", "type": ["null", "string"], "default": null},
+    {"name": "device_battery_percent", "type": ["null", "int"], "default": null},
+    {"name": "signal_strength_dbm", "type": ["null", "int"], "default": null}
+  ]
+}
