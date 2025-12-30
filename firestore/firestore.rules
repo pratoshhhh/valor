@@ -1,0 +1,3 @@
+mkdir -p firestore
+nano firestore/firestore.rules
+# Paste the rules

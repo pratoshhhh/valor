@@ -15,6 +15,11 @@ KAFKA_CONFIG = {
     'sasl.mechanisms': 'PLAIN',
     'sasl.username': os.getenv('CONFLUENT_API_KEY'),
     'sasl.password': os.getenv('CONFLUENT_API_SECRET'),
+
+    'enable.idempotence': True,
+    'acks': 'all',
+    'retries': 10,
+
 }
 
 SCHEMA_REGISTRY_CONFIG = {

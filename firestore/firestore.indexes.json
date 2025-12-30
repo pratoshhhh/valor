@@ -1,0 +1,29 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "service_record",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "soldier_id", "order": "ASCENDING" },
+        { "fieldPath": "timestamp", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "service_record",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "severity", "order": "ASCENDING" },
+        { "fieldPath": "timestamp", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "health_alerts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "soldier_id", "order": "ASCENDING" },
+        { "fieldPath": "resolved", "order": "ASCENDING" },
+        { "fieldPath": "created_at", "order": "DESCENDING" }
+      ]
+    }
+  ]
+}

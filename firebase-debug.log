@@ -1,0 +1,88 @@
+[debug] [2025-12-30T08:42:12.440Z] ----------------------------------------------------------------------
+[debug] [2025-12-30T08:42:12.442Z] Command:       /usr/local/bin/firebase /home/pratosh/.cache/firebase/tools/lib/node_modules/firebase-tools/lib/bin/firebase init firestore
+[debug] [2025-12-30T08:42:12.442Z] CLI Version:   15.1.0
+[debug] [2025-12-30T08:42:12.443Z] Platform:      linux
+[debug] [2025-12-30T08:42:12.443Z] Node Version:  v20.18.2
+[debug] [2025-12-30T08:42:12.443Z] Time:          Tue Dec 30 2025 03:42:12 GMT-0500 (Eastern Standard Time)
+[debug] [2025-12-30T08:42:12.443Z] ----------------------------------------------------------------------
+[debug] 
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /home/pratosh/Desktop/Desktop/programming/code/valor
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] 
+[debug] [2025-12-30T08:42:19.254Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-12-30T08:42:19.255Z] > authorizing via signed-in user (pratosh06t@gmail.com)
+[debug] [2025-12-30T08:42:19.256Z] Checked if tokens are valid: true, expires at: 1767087621706
+[debug] [2025-12-30T08:42:19.256Z] Checked if tokens are valid: true, expires at: 1767087621706
+[debug] [2025-12-30T08:42:19.258Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/availableProjects pageSize=100
+[debug] [2025-12-30T08:42:19.875Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/availableProjects 200
+[debug] [2025-12-30T08:42:19.876Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/availableProjects [omitted]
+[debug] [2025-12-30T08:42:28.020Z] Checked if tokens are valid: true, expires at: 1767087621706
+[debug] [2025-12-30T08:42:28.020Z] Checked if tokens are valid: true, expires at: 1767087621706
+[debug] [2025-12-30T08:42:28.020Z] >>> [apiv2][query] POST https://firebase.googleapis.com/v1beta1/projects/valorstream-demo-1:addFirebase [none]
+[debug] [2025-12-30T08:42:28.571Z] <<< [apiv2][status] POST https://firebase.googleapis.com/v1beta1/projects/valorstream-demo-1:addFirebase 403
+[debug] [2025-12-30T08:42:28.572Z] <<< [apiv2][body] POST https://firebase.googleapis.com/v1beta1/projects/valorstream-demo-1:addFirebase {"error":{"code":403,"message":"The caller does not have permission","status":"PERMISSION_DENIED"}}
+[debug] [2025-12-30T08:42:28.572Z] Request to https://firebase.googleapis.com/v1beta1/projects/valorstream-demo-1:addFirebase had HTTP Error: 403, The caller does not have permission
+[debug] [2025-12-30T08:42:28.775Z] FirebaseError: Request to https://firebase.googleapis.com/v1beta1/projects/valorstream-demo-1:addFirebase had HTTP Error: 403, The caller does not have permission
+    at responseToError (/home/pratosh/.cache/firebase/tools/lib/node_modules/firebase-tools/lib/responseToError.js:53:12)
+    at RetryOperation._fn (/home/pratosh/.cache/firebase/tools/lib/node_modules/firebase-tools/lib/apiv2.js:322:77)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+[error] 
+[error] Error: Failed to add Firebase to Google Cloud Platform project. See firebase-debug.log for more info.
+[debug] [2025-12-30T08:42:46.179Z] ----------------------------------------------------------------------
+[debug] [2025-12-30T08:42:46.181Z] Command:       /usr/local/bin/firebase /home/pratosh/.cache/firebase/tools/lib/node_modules/firebase-tools/lib/bin/firebase init firestore
+[debug] [2025-12-30T08:42:46.181Z] CLI Version:   15.1.0
+[debug] [2025-12-30T08:42:46.182Z] Platform:      linux
+[debug] [2025-12-30T08:42:46.182Z] Node Version:  v20.18.2
+[debug] [2025-12-30T08:42:46.182Z] Time:          Tue Dec 30 2025 03:42:46 GMT-0500 (Eastern Standard Time)
+[debug] [2025-12-30T08:42:46.182Z] ----------------------------------------------------------------------
+[debug] 
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /home/pratosh/Desktop/Desktop/programming/code/valor
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] 
+[debug] [2025-12-30T08:42:48.510Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-12-30T08:42:48.511Z] > authorizing via signed-in user (pratosh06t@gmail.com)
+[debug] [2025-12-30T08:42:48.512Z] Checked if tokens are valid: true, expires at: 1767087621706
+[debug] [2025-12-30T08:42:48.512Z] Checked if tokens are valid: true, expires at: 1767087621706
+[debug] [2025-12-30T08:42:48.514Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/availableProjects pageSize=100
+[debug] [2025-12-30T08:42:49.051Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/availableProjects 200
+[debug] [2025-12-30T08:42:49.052Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/availableProjects [omitted]
+[debug] [2025-12-30T08:42:52.019Z] Checked if tokens are valid: true, expires at: 1767087621706
+[debug] [2025-12-30T08:42:52.019Z] Checked if tokens are valid: true, expires at: 1767087621706
+[debug] [2025-12-30T08:42:52.020Z] >>> [apiv2][query] POST https://firebase.googleapis.com/v1beta1/projects/valorstream-demo-1:addFirebase [none]
+[debug] [2025-12-30T08:42:52.219Z] <<< [apiv2][status] POST https://firebase.googleapis.com/v1beta1/projects/valorstream-demo-1:addFirebase 403
+[debug] [2025-12-30T08:42:52.219Z] <<< [apiv2][body] POST https://firebase.googleapis.com/v1beta1/projects/valorstream-demo-1:addFirebase {"error":{"code":403,"message":"The caller does not have permission","status":"PERMISSION_DENIED"}}
+[debug] [2025-12-30T08:42:52.220Z] Request to https://firebase.googleapis.com/v1beta1/projects/valorstream-demo-1:addFirebase had HTTP Error: 403, The caller does not have permission
+[debug] [2025-12-30T08:42:52.422Z] FirebaseError: Request to https://firebase.googleapis.com/v1beta1/projects/valorstream-demo-1:addFirebase had HTTP Error: 403, The caller does not have permission
+    at responseToError (/home/pratosh/.cache/firebase/tools/lib/node_modules/firebase-tools/lib/responseToError.js:53:12)
+    at RetryOperation._fn (/home/pratosh/.cache/firebase/tools/lib/node_modules/firebase-tools/lib/apiv2.js:322:77)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+[error] 
+[error] Error: Failed to add Firebase to Google Cloud Platform project. See firebase-debug.log for more info.
