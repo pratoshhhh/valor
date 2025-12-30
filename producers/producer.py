@@ -12,6 +12,15 @@ import time
 import random
 from datetime import datetime
 
+# Add after imports, before the class
+print("=" * 60)
+print("DEBUG: Configuration Check")
+print("=" * 60)
+print(f"Bootstrap Server: {KAFKA_CONFIG.get('bootstrap.servers')}")
+print(f"API Key: {KAFKA_CONFIG.get('sasl.username')[:10]}..." if KAFKA_CONFIG.get('sasl.username') else "None")
+print(f"Schema Registry URL: {SCHEMA_REGISTRY_CONFIG.get('url')}")
+print("=" * 60)
+
 class BattlefieldEventProducer:
     def __init__(self):
         # Schema Registry setup
@@ -111,21 +120,22 @@ class BattlefieldEventProducer:
         }
     
     def send_event(self, event):
-        """Send event to Kafka"""
         try:
             self.producer.produce(
-                topic='battlefield-events-raw',
-                key=event['soldier_id'],
-                value=self.avro_serializer(
-                    event,
-                    SerializationContext('battlefield-events-raw', MessageField.VALUE)
-                ),
-                on_delivery=self.delivery_report
-            )
+            topic='battlefield-events-raw',
+            key=event['soldier_id'],
+            value=self.avro_serializer(
+                event,
+                SerializationContext('battlefield-events-raw', MessageField.VALUE)
+            ),
+            on_delivery=self.delivery_report
+        )
             self.producer.poll(0)
         except Exception as e:
-            print(f"Error producing message: {e}")
-    
+            print(f"❌ Error producing message: {e}")
+            import traceback
+            traceback.print_exc()
+
     def simulate_deployment(self, soldier_id, duration_hours=8, events_per_hour=3):
         """Simulate a full deployment day"""
         print(f"\n🎖️  Starting deployment simulation for {soldier_id}")
