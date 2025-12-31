@@ -4,6 +4,29 @@ import { Activity, Database, TrendingUp, Zap, Server, AlertCircle } from 'lucide
 import { Line, Bar } from 'react-chartjs-2';
 import apiService from '../services/api';
 
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,        // ← ADD THIS
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,        // ← ADD THIS
+  Title,
+  Tooltip,
+  Legend
+);
+
 const ConfluentMetrics = () => {
   const [metrics, setMetrics] = useState(null);
   const [loading, setLoading] = useState(true);
