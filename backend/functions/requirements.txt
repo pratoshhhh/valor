@@ -1,7 +1,15 @@
-functions-framework==3.5.0
-google-cloud-firestore==2.14.0
-google-cloud-storage==2.14.0
-requests==2.31.0
-flask==3.0.0
+# Cloud Functions Requirements
+# For all VALOR backend functions
+
+functions-framework==3.*
+google-cloud-firestore==2.*
+google-cloud-storage==2.*
+flask==3.*
+requests==2.*
+
+# For VA Report Generation
 google-generativeai==0.3.*
 reportlab==4.0.*
+
+# For Confluent metrics
+confluent-kafka==2.*
