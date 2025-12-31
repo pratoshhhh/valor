@@ -113,55 +113,40 @@ VALOR is a veteran-focused health documentation and reporting system designed to
 
 ```
 valor/
-├── valor-dashboard/              # React frontend
+├── backend/
+│   └── functions/                # Cloud Functions (Python APIs)
+│       ├── main.py
+│       ├── requirements.txt
+│       └── deploy.sh
+├── bin/                          # (likely build / utility scripts)
+├── config/                       # Config files used by services
+├── consumers/                    # Kafka consumers
+├── firestore/                    # Firestore-related setup/scripts
+├── infrastructure/
+│   └── scripts/                  # Scripts for deployment/infrastructure tasks
+├── ksql/                         # ksqlDB scripts for Kafka streams
+├── monitoring/                   # Monitoring/config tooling
+├── producers/                    # Kafka producers
+├── schemas/                      # Avro schemas for events
+├── scripts/                      # Misc scripts
+├── utils/                        # Utility modules
+├── valor-dashboard/              # React frontend for dashboard
 │   ├── public/
 │   ├── src/
-│   │   ├── components/          # Reusable components
-│   │   │   ├── Navbar.js
-│   │   │   └── Sidebar.js
-│   │   ├── pages/               # Application pages
-│   │   │   ├── Dashboard.js
-│   │   │   ├── HealthAlerts.js
-│   │   │   ├── VAReports.js
-│   │   │   ├── ConfluentMetrics.js
-│   │   │   ├── Devices.js
-│   │   │   ├── Soldiers.js
-│   │   │   ├── SoldierProfile.js
-│   │   │   └── Login.js
+│   │   ├── components/
+│   │   ├── pages/
 │   │   ├── services/
-│   │   │   └── api.js           # API service layer
 │   │   ├── styles/
-│   │   │   └── App.css
 │   │   ├── App.js
 │   │   └── index.js
 │   ├── package.json
 │   ├── firebase.json
 │   └── README.md
-│
-├── valorstream/                  # Data pipeline
-│   ├── config/
-│   │   └── config.py            # Kafka & GCP configuration
-│   ├── schemas/
-│   │   └── battlefield_event.avsc
-│   ├── producer/
-│   │   ├── producer.py
-│   │   └── enhanced_producer.py # Continuous simulation
-│   ├── consumer/
-│   │   ├── consumer.py
-│   │   └── enhanced_consumer.py # Dashboard-compatible
-│   └── initialize_firestore.py  # Database setup
-│
-├── backend/
-│   └── functions/               # Cloud Functions
-│       ├── main.py              # All 6 functions
-│       ├── requirements.txt
-│       └── deploy.sh
-│
-├── README.md                    # This file
-├── TROUBLESHOOTING.md          # Common issues & solutions
-└── .gitignore
-```
-
+├── .gitignore
+├── LICENSE
+├── README.md
+├── initialize_firestore.py       # Script to initialize Firestore data
+└── inspect_firestore.py          # Script to inspect Firestore contents
 ---
 
 ## Prerequisites
