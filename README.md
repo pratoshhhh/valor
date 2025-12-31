@@ -82,7 +82,7 @@ VALOR is a veteran-focused health documentation and reporting system designed to
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 - **React 18** - UI framework
@@ -109,7 +109,7 @@ VALOR is a veteran-focused health documentation and reporting system designed to
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 valor/
