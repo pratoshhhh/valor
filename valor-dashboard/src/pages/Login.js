@@ -192,23 +192,6 @@ const Login = () => {
             LOGIN
           </button>
         </form>
-
-        <div style={{
-          marginTop: '24px',
-          padding: '16px',
-          background: 'rgba(0,255,136,0.05)',
-          borderRadius: '8px',
-          border: '1px solid rgba(0,255,136,0.2)'
-        }}>
-          <p style={{
-            fontSize: '12px',
-            color: 'var(--text-secondary)',
-            textAlign: 'center',
-            margin: '0'
-          }}>
-            Demo Credentials: <strong style={{ color: 'var(--accent-green)' }}>admin</strong> / <strong style={{ color: 'var(--accent-green)' }}>valor2024</strong>
-          </p>
-        </div>
       </div>
     </div>
   );
