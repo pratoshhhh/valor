@@ -21,7 +21,6 @@ export default class ArcElement extends Element<ArcProps, ArcOptions> {
         spacing: number;
         angle: any;
         circular: boolean;
-        selfJoin: boolean;
     };
     static defaultRoutes: {
         backgroundColor: string;

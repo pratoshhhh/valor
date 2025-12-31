@@ -1,5 +1,12 @@
-import type PrivateChart from '../core/core.controller.js';
-import type { Chart, ChartEvent } from '../types.js';
+import type Chart from '../core/core.controller.js';
+import type { ChartEvent } from '../types.js';
+/**
+ * Note: typedefs are auto-exported, so use a made-up `dom` namespace where
+ * necessary to avoid duplicates with `export * from './helpers`; see
+ * https://github.com/microsoft/TypeScript/issues/46011
+ * @typedef { import('../core/core.controller.js').default } dom.Chart
+ * @typedef { import('../../types').ChartEvent } ChartEvent
+ */
 /**
  * @private
  */
@@ -15,7 +22,7 @@ export declare function getStyle(el: HTMLElement, property: string): string;
  * @param chart
  * @returns x and y coordinates of the event
  */
-export declare function getRelativePosition(event: Event | ChartEvent | TouchEvent | MouseEvent, chart: Chart | PrivateChart): {
+export declare function getRelativePosition(event: Event | ChartEvent | TouchEvent | MouseEvent, chart: Chart): {
     x: number;
     y: number;
 };
@@ -29,7 +36,7 @@ export declare function getMaximumSize(canvas: HTMLCanvasElement, bbWidth?: numb
  * @param forceStyle
  * @returns True if the canvas context size or transformation has changed.
  */
-export declare function retinaScale(chart: Chart | PrivateChart, forceRatio: number, forceStyle?: boolean): boolean | void;
+export declare function retinaScale(chart: Chart, forceRatio: number, forceStyle?: boolean): boolean | void;
 /**
  * Detects support for options object argument in addEventListener.
  * https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#Safely_detecting_option_support
