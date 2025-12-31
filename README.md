@@ -1,12 +1,12 @@
-# VALOR - Health Monitoring System
+# VALOR – VA Disability Reporting & Health Evidence Platform
 
-A real-time military health monitoring system that tracks soldier wellness through IoT sensors and environmental monitors. The platform processes battlefield health data through a Kafka streaming pipeline, stores it in Firestore, and provides commanders with a real-time dashboard for monitoring critical health alerts and generating AI-powered VA disability reports.
+VALOR is a veteran-focused health documentation and reporting system designed to make VA disability claims faster, clearer, and easier to approve. The platform continuously collects and organizes health and exposure data from service environments, transforming it into VA-ready medical evidence and AI-assisted disability reports. It does so through by tracking IoT sensors and environmental monitors. The platform processes battlefield health data through a Kafka streaming pipeline, stores it in Firestore, and provides commanders with a real-time dashboard for monitoring critical health alerts an generating AI-powered VA disability reports.
 
-🌐 **Live Demo:** [https://valorstream-demo-1.web.app](https://valorstream-demo-1.web.app)
+**Live Demo:** [https://valorstream-demo-1.web.app](https://valorstream-demo-1.web.app)
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Features](#features)
 - [Architecture](#architecture)
@@ -25,34 +25,28 @@ A real-time military health monitoring system that tracks soldier wellness throu
 
 ---
 
-## ✨ Features
-
-### Real-Time Monitoring
-- 🔴 **Live Health Alerts** - Monitor critical events (burn pit exposure, cardiac events, heat stress)
-- 📊 **Interactive Dashboard** - Real-time stats with 10-second polling intervals
-- 🎯 **Alert Management** - Filter, search, and resolve health alerts
-- 📈 **Data Visualization** - Charts and graphs for health trends
+## Features
 
 ### AI-Powered Analytics
-- 🤖 **VA Report Generation** - AI-powered disability claim reports using Google Gemini
-- 📄 **PDF Export** - Professional multi-page VA reports with medical analysis
-- 🧠 **Predictive Analytics** - Risk assessment and health score calculation
+- **VA Report Generation** - AI-powered disability claim reports using Google Gemini
+- **PDF Export** - Professional multi-page VA reports with medical analysis
+- **Predictive Analytics** - Risk assessment and health score calculation
+
+### Real-Time Monitoring
+- **Live Health Alerts** - Monitor critical events (burn pit exposure, cardiac events, heat stress)
+- **Interactive Dashboard** - Real-time stats with 10-second polling intervals
+- **Alert Management** - Filter, search, and resolve health alerts
+- **Data Visualization** - Charts and graphs for health trends
 
 ### Data Pipeline
-- 📡 **Kafka Streaming** - Real-time battlefield sensor data processing
-- 🔄 **Event Processing** - Avro schema-based message serialization
-- 💾 **Firestore Storage** - Scalable NoSQL database for soldier records
-- ☁️ **Cloud Functions** - Serverless API endpoints
-
-### User Interface
-- 🎨 **Military Dark Theme** - Professional UI with tactical aesthetics
-- 🔍 **Advanced Search** - Search soldiers, alerts, and devices
-- 📱 **Responsive Design** - Works on desktop and mobile
-- 🔐 **Authentication** - Secure login system
+- **Kafka Streaming** - Real-time battlefield sensor data processing
+- **Event Processing** - Avro schema-based message serialization
+- **Firestore Storage** - Scalable NoSQL database for soldier records
+- **Cloud Functions** - Serverless API endpoints
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────────┐
@@ -170,7 +164,7 @@ valor/
 
 ---
 
-## 📋 Prerequisites
+## Prerequisites
 
 - **Node.js** (v16+)
 - **Python** (3.11+)
@@ -181,7 +175,7 @@ valor/
 
 ---
 
-## 🚀 Installation
+## Installation
 
 ### 1. Clone Repository
 
@@ -219,7 +213,7 @@ firebase init
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 ### 1. Environment Variables
 
@@ -274,7 +268,7 @@ This creates:
 
 ---
 
-## 🏃 Running the System
+## Running the System
 
 ### Development Mode
 
@@ -355,7 +349,7 @@ gsutil iam ch allUsers:objectViewer gs://valorstream-reports
 
 ---
 
-## 📡 API Documentation
+## API Documentation
 
 ### Health Alerts
 
@@ -435,7 +429,7 @@ Manually ingest battlefield events (alternative to Kafka pipeline).
 
 ---
 
-## 💡 Usage
+## Usage
 
 ### Dashboard Overview
 
@@ -464,7 +458,7 @@ Manually ingest battlefield events (alternative to Kafka pipeline).
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please follow these guidelines:
 
@@ -476,7 +470,7 @@ Contributions are welcome! Please follow these guidelines:
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 See [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for common issues and solutions.
 
@@ -488,21 +482,14 @@ See [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for common issues and solutions.
 
 ---
 
-## 📄 License
+## License
 
-Proprietary - VALOR Health Monitoring System
-
----
-
-## 📞 Contact
-
-**Project Maintainer:** Pratosh  
-**Repository:** [https://github.com/pratoshhhh/valor](https://github.com/pratoshhhh/valor)  
-**Live Demo:** [https://valorstream-demo-1.web.app](https://valorstream-demo-1.web.app)
+MIT License
 
 ---
 
-## 🎖️ Acknowledgments
+
+## Acknowledgments
 
 - Google Cloud Platform for infrastructure
 - Confluent for Kafka streaming
