@@ -181,7 +181,7 @@ npm install
 ### 3. Backend Setup (Optional - for local development)
 
 ```bash
-cd ../valorstream
+cd ../valor
 pip install -r requirements.txt --break-system-packages
 ```
 
@@ -244,7 +244,6 @@ const API_BASE = {
 ### 3. Initialize Firestore
 
 ```bash
-cd valorstream
 python initialize_firestore.py
 ```
 
@@ -274,15 +273,15 @@ npm start
 #### 2. Start Producer (Optional - for real-time data)
 
 ```bash
-cd valorstream/producer
-python enhanced_producer.py
+cd producer
+python3 enhanced_producer.py
 ```
 
 #### 3. Start Consumer (Optional - for real-time data)
 
 ```bash
-cd valorstream/consumer
-python enhanced_consumer.py
+cd consumer
+python3 enhanced_consumer.py
 ```
 
 ### Production Mode
@@ -314,7 +313,7 @@ cd backend/functions
 export GEMINI_API_KEY="your_gemini_api_key"
 
 # Deploy all functions
-./deploy.sh
+./infrastructure/scripts/deploy.sh
 
 # Or deploy individually
 gcloud functions deploy get-health-alerts \
@@ -457,9 +456,6 @@ Contributions are welcome! Please follow these guidelines:
 
 ---
 
-## Troubleshooting
-
-See [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for common issues and solutions.
 
 **Quick Fixes:**
 - **Empty Dashboard:** Run `python initialize_firestore.py`
