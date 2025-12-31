@@ -69,43 +69,48 @@ def verify_api_key(request):
 
 @functions_framework.http
 def get_health_alerts(request):
-    """Get all active health alerts"""
+    """Get all health alerts from Firestore"""
+    
+    # Handle CORS preflight
+    if request.method == 'OPTIONS':
+        headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Max-Age': '3600'
+        }
+        return ('', 204, headers)
+    
     try:
-        # Get filter parameters
-        severity = request.args.get('severity')  # Optional: HIGH, CRITICAL
-        soldier_id = request.args.get('soldier_id')  # Optional
-        status = request.args.get('status', 'ACTIVE')  # Default to ACTIVE
-        
-        # Query Firestore
+        # SIMPLE QUERY - No filtering, no sorting
         alerts_ref = db.collection('health_alerts')
-        query = alerts_ref.where('status', '==', status)
-        
-        if severity:
-            query = query.where('severity', '==', severity)
-        
-        if soldier_id:
-            query = query.where('soldier_id', '==', soldier_id)
-        
-        # Order by timestamp, most recent first
-        query = query.order_by('created_at', direction=firestore.Query.DESCENDING)
+        docs = alerts_ref.stream()
         
         alerts = []
-        for doc in query.stream():
-            alert = doc.to_dict()
-            alert['alert_id'] = doc.id
-            alerts.append(alert)
+        for doc in docs:
+            alert_data = doc.to_dict()
+            alert_data['id'] = doc.id
+            alerts.append(alert_data)
         
-        return jsonify({
+        # Add CORS headers
+        headers = {'Access-Control-Allow-Origin': '*'}
+        
+        return (jsonify({
             'status': 'success',
-            'count': len(alerts),
-            'alerts': alerts
-        }), 200
+            'alerts': alerts,
+            'count': len(alerts)
+        }), 200, headers)
         
     except Exception as e:
-        print(f"Error fetching alerts: {e}")
-        return jsonify({'error': str(e)}), 500
-
-
+        print(f"Error fetching alerts: {str(e)}")
+        headers = {'Access-Control-Allow-Origin': '*'}
+        return (jsonify({
+            'status': 'error',
+            'error': str(e),
+            'alerts': [],
+            'count': 0
+        }), 500, headers)
+    
 @functions_framework.http
 def resolve_alert(request):
     """Mark a health alert as resolved"""
