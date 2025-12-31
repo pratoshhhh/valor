@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from '../components/Navbar';
-import { AlertTriangle, CheckCircle, Clock, MapPin, Search, Filter } from 'lucide-react';
-import apiService from '../services/api';
+import { getHealthAlerts, resolveAlert } from '../services/api';
+import '../styles/HealthAlerts.css';
 
-const HealthAlerts = () => {
+function HealthAlerts() {
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [resolving, setResolving] = useState(null);
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterSeverity, setFilterSeverity] = useState('all');
 
   useEffect(() => {
     fetchAlerts();
-    const interval = setInterval(fetchAlerts, 10000); // Poll every 10 seconds
+    // Auto-refresh every 10 seconds
+    const interval = setInterval(fetchAlerts, 10000);
     return () => clearInterval(interval);
   }, []);
 
   const fetchAlerts = async () => {
     try {
-      const data = await apiService.getHealthAlerts();
+      const data = await getHealthAlerts();
       setAlerts(data.alerts || []);
       setLoading(false);
     } catch (error) {
@@ -27,266 +27,248 @@ const HealthAlerts = () => {
     }
   };
 
-  const handleResolveAlert = async (alertId) => {
-    setResolving(alertId);
+  const handleResolve = async (alertId) => {
     try {
-      await apiService.resolveAlert(alertId, 'Resolved by operator');
-      await fetchAlerts();
+      await resolveAlert(alertId, 'Resolved by user');
+      fetchAlerts(); // Refresh the list
     } catch (error) {
       console.error('Error resolving alert:', error);
-    } finally {
-      setResolving(null);
     }
   };
 
-  const filteredAlerts = alerts
-    .filter(alert => {
-      if (filter === 'all') return true;
-      if (filter === 'active') return alert.status !== 'resolved';
-      if (filter === 'critical') return alert.severity === 'CRITICAL';
-      return alert.severity === filter.toUpperCase();
-    })
-    .filter(alert => 
-      alert.soldier_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      alert.event_type.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  // Helper function to safely get event type
+  const getEventType = (alert) => {
+    return alert.event_type || alert.alert_type || 'Unknown Event';
+  };
 
-  const getSeverityColor = (severity) => {
-    switch (severity) {
-      case 'CRITICAL': return 'var(--accent-red)';
-      case 'HIGH': return 'var(--accent-amber)';
-      case 'MEDIUM': return 'var(--accent-blue)';
-      default: return 'var(--accent-green)';
+  // Helper function to get message
+  const getMessage = (alert) => {
+    if (alert.message) return alert.message;
+    if (alert.details?.description) return alert.details.description;
+    return `Alert for ${alert.soldier_id}`;
+  };
+
+  const filteredAlerts = alerts.filter(alert => {
+    // Get event type safely
+    const eventType = getEventType(alert);
+    const message = getMessage(alert);
+    const soldierId = alert.soldier_id || '';
+    const severity = alert.severity || '';
+    const status = alert.status || (alert.resolved === false ? 'pending' : 'resolved');
+    
+    // Search filter - safely check all fields
+    const matchesSearch = searchTerm === '' || 
+      soldierId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      eventType.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      message.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      severity.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    // Status filter
+    const matchesStatus = filterStatus === 'all' || status === filterStatus;
+    
+    // Severity filter
+    const matchesSeverity = filterSeverity === 'all' || severity === filterSeverity;
+    
+    return matchesSearch && matchesStatus && matchesSeverity;
+  });
+
+  // Get severity badge class
+  const getSeverityClass = (severity) => {
+    switch (severity?.toUpperCase()) {
+      case 'CRITICAL':
+        return 'severity-critical';
+      case 'HIGH':
+        return 'severity-high';
+      case 'MEDIUM':
+        return 'severity-medium';
+      case 'LOW':
+        return 'severity-low';
+      default:
+        return 'severity-medium';
+    }
+  };
+
+  // Get status badge class
+  const getStatusClass = (alert) => {
+    const status = alert.status || (alert.resolved === false ? 'pending' : 'resolved');
+    return status === 'pending' ? 'status-pending' : 'status-resolved';
+  };
+
+  // Format timestamp
+  const formatTimestamp = (timestamp) => {
+    if (!timestamp) return 'N/A';
+    try {
+      const date = new Date(timestamp);
+      return date.toLocaleString();
+    } catch (e) {
+      return timestamp;
     }
   };
 
   if (loading) {
     return (
-      <div className="main-content">
-        <Navbar title="Health Alerts" />
-        <div className="loading-spinner">
-          <div className="spinner"></div>
-        </div>
+      <div className="health-alerts">
+        <div className="loading">Loading alerts...</div>
       </div>
     );
   }
 
-  const criticalCount = alerts.filter(a => a.severity === 'CRITICAL' && a.status !== 'resolved').length;
-  const activeCount = alerts.filter(a => a.status !== 'resolved').length;
-
   return (
-    <div className="main-content">
-      <Navbar title="Health Alerts" />
-
-      {/* Alert Summary */}
-      <div className="stats-grid">
-        <div className="stat-card danger">
-          <div className="stat-header">
-            <span className="stat-label">Critical Alerts</span>
-            <AlertTriangle size={20} style={{ color: 'var(--accent-red)' }} />
+    <div className="health-alerts">
+      <div className="alerts-header">
+        <h1>Health Alerts</h1>
+        <div className="alerts-stats">
+          <div className="stat-item">
+            <span className="stat-label">Total Alerts:</span>
+            <span className="stat-value">{alerts.length}</span>
           </div>
-          <div className="stat-value">{criticalCount}</div>
-          <div className="stat-change negative">Requires immediate action</div>
-        </div>
-
-        <div className="stat-card warning">
-          <div className="stat-header">
-            <span className="stat-label">Active Alerts</span>
-            <Clock size={20} style={{ color: 'var(--accent-amber)' }} />
+          <div className="stat-item">
+            <span className="stat-label">Pending:</span>
+            <span className="stat-value">
+              {alerts.filter(a => (a.status || (a.resolved === false ? 'pending' : 'resolved')) === 'pending').length}
+            </span>
           </div>
-          <div className="stat-value">{activeCount}</div>
-          <div className="stat-change">Pending resolution</div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-header">
-            <span className="stat-label">Resolved Today</span>
-            <CheckCircle size={20} style={{ color: 'var(--accent-green)' }} />
-          </div>
-          <div className="stat-value">{alerts.filter(a => a.status === 'resolved').length}</div>
-          <div className="stat-change">↑ 15% from yesterday</div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-header">
-            <span className="stat-label">Response Time</span>
-            <Clock size={20} style={{ color: 'var(--accent-blue)' }} />
-          </div>
-          <div className="stat-value">4.2m</div>
-          <div className="stat-change">Average response time</div>
-        </div>
-      </div>
-
-      {/* Filters and Search */}
-      <div className="card" style={{ marginBottom: '24px' }}>
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
-          <div className="search-box" style={{ flex: '1', minWidth: '300px' }}>
-            <Search className="search-icon" size={18} />
-            <input
-              type="text"
-              className="search-input"
-              placeholder="Search by soldier ID or alert type..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <Filter size={20} style={{ color: 'var(--text-secondary)' }} />
-            <button
-              className={filter === 'all' ? 'btn btn-primary' : 'btn btn-secondary'}
-              onClick={() => setFilter('all')}
-              style={{ padding: '8px 16px' }}
-            >
-              All
-            </button>
-            <button
-              className={filter === 'active' ? 'btn btn-primary' : 'btn btn-secondary'}
-              onClick={() => setFilter('active')}
-              style={{ padding: '8px 16px' }}
-            >
-              Active
-            </button>
-            <button
-              className={filter === 'critical' ? 'btn btn-primary' : 'btn btn-secondary'}
-              onClick={() => setFilter('critical')}
-              style={{ padding: '8px 16px' }}
-            >
-              Critical
-            </button>
+          <div className="stat-item">
+            <span className="stat-label">Critical:</span>
+            <span className="stat-value severity-critical">
+              {alerts.filter(a => a.severity === 'CRITICAL').length}
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Alerts List */}
-      <div className="card">
-        <div className="card-header">
-          <h3 className="card-title">Health Alerts ({filteredAlerts.length})</h3>
-          <span className="badge badge-danger">Live Updates</span>
-        </div>
+      <div className="alerts-filters">
+        <input
+          type="text"
+          placeholder="Search by soldier ID, event type, or message..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-input"
+        />
+        
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          className="filter-select"
+        >
+          <option value="all">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="resolved">Resolved</option>
+        </select>
 
+        <select
+          value={filterSeverity}
+          onChange={(e) => setFilterSeverity(e.target.value)}
+          className="filter-select"
+        >
+          <option value="all">All Severity</option>
+          <option value="CRITICAL">Critical</option>
+          <option value="HIGH">High</option>
+          <option value="MEDIUM">Medium</option>
+          <option value="LOW">Low</option>
+        </select>
+      </div>
+
+      <div className="alerts-list">
         {filteredAlerts.length === 0 ? (
-          <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-            <AlertTriangle size={48} style={{ opacity: 0.3, marginBottom: '16px' }} />
-            <p>No alerts found matching your criteria</p>
+          <div className="no-alerts">
+            {searchTerm || filterStatus !== 'all' || filterSeverity !== 'all'
+              ? 'No alerts match your filters'
+              : 'No alerts found'}
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {filteredAlerts.map((alert, index) => (
-              <div
-                key={index}
-                style={{
-                  background: 'var(--secondary-bg)',
-                  border: `1px solid ${getSeverityColor(alert.severity)}`,
-                  borderLeft: `4px solid ${getSeverityColor(alert.severity)}`,
-                  borderRadius: '8px',
-                  padding: '20px',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateX(4px)';
-                  e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateX(0)';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                      <AlertTriangle size={20} style={{ color: getSeverityColor(alert.severity) }} />
-                      <h4 style={{ margin: 0, fontSize: '18px', fontWeight: '600' }}>
-                        {alert.event_type}
-                      </h4>
-                      <span className={`badge badge-${
-                        alert.severity === 'CRITICAL' ? 'danger' :
-                        alert.severity === 'HIGH' ? 'warning' : 'info'
-                      }`}>
-                        {alert.severity}
-                      </span>
-                      {alert.status === 'resolved' && (
-                        <span className="badge badge-success">Resolved</span>
-                      )}
+          filteredAlerts.map((alert) => {
+            const status = alert.status || (alert.resolved === false ? 'pending' : 'resolved');
+            const eventType = getEventType(alert);
+            const message = getMessage(alert);
+            
+            return (
+              <div key={alert.id || alert.event_id} className="alert-card">
+                <div className="alert-header">
+                  <div className="alert-title">
+                    <span className={`severity-badge ${getSeverityClass(alert.severity)}`}>
+                      {alert.severity || 'MEDIUM'}
+                    </span>
+                    <h3>{eventType}</h3>
+                    <span className={`status-badge ${getStatusClass(alert)}`}>
+                      {status}
+                    </span>
+                  </div>
+                  {status === 'pending' && (
+                    <button
+                      onClick={() => handleResolve(alert.id || alert.event_id)}
+                      className="resolve-btn"
+                    >
+                      Resolve
+                    </button>
+                  )}
+                </div>
+
+                <div className="alert-body">
+                  <div className="alert-info">
+                    <div className="info-row">
+                      <span className="info-label">Soldier ID:</span>
+                      <span className="info-value">{alert.soldier_id || 'N/A'}</span>
                     </div>
-
-                    <div style={{ 
-                      display: 'grid', 
-                      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-                      gap: '16px',
-                      marginBottom: '12px'
-                    }}>
-                      <div>
-                        <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>
-                          Soldier ID
-                        </p>
-                        <p style={{ fontSize: '15px', fontWeight: '600' }}>{alert.soldier_id}</p>
-                      </div>
-
-                      <div>
-                        <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>
-                          <MapPin size={12} style={{ display: 'inline', marginRight: '4px' }} />
-                          Location
-                        </p>
-                        <p style={{ fontSize: '15px' }}>{alert.location}</p>
-                      </div>
-
-                      <div>
-                        <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>
-                          <Clock size={12} style={{ display: 'inline', marginRight: '4px' }} />
-                          Timestamp
-                        </p>
-                        <p style={{ fontSize: '15px' }}>
-                          {new Date(alert.timestamp).toLocaleString()}
-                        </p>
-                      </div>
-
-                      <div>
-                        <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>
-                          Event ID
-                        </p>
-                        <p style={{ fontSize: '13px', fontFamily: 'monospace', color: 'var(--accent-blue)' }}>
-                          {alert.event_id}
-                        </p>
-                      </div>
+                    <div className="info-row">
+                      <span className="info-label">Event ID:</span>
+                      <span className="info-value">{alert.event_id || alert.id || 'N/A'}</span>
                     </div>
-
-                    {alert.details && (
-                      <div style={{
-                        background: 'var(--primary-bg)',
-                        padding: '12px',
-                        borderRadius: '6px',
-                        marginTop: '12px'
-                      }}>
-                        <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: 0 }}>
-                          <strong>Details:</strong> {JSON.stringify(alert.details)}
-                        </p>
+                    <div className="info-row">
+                      <span className="info-label">Timestamp:</span>
+                      <span className="info-value">{formatTimestamp(alert.timestamp || alert.created_at)}</span>
+                    </div>
+                    {alert.location && (
+                      <div className="info-row">
+                        <span className="info-label">Location:</span>
+                        <span className="info-value">{alert.location}</span>
                       </div>
                     )}
                   </div>
 
-                  {alert.status !== 'resolved' && (
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => handleResolveAlert(alert.event_id)}
-                      disabled={resolving === alert.event_id}
-                      style={{ marginLeft: '16px' }}
-                    >
-                      {resolving === alert.event_id ? (
-                        <><div className="spinner" style={{ width: '16px', height: '16px' }}></div> Resolving...</>
-                      ) : (
-                        <><CheckCircle size={16} /> Resolve</>
-                      )}
-                    </button>
+                  <div className="alert-message">
+                    <p>{message}</p>
+                  </div>
+
+                  {alert.details && typeof alert.details === 'object' && (
+                    <div className="alert-details">
+                      <h4>Details:</h4>
+                      <ul>
+                        {Object.entries(alert.details).map(([key, value]) => {
+                          if (key === 'description') return null; // Already shown in message
+                          return (
+                            <li key={key}>
+                              <strong>{key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}:</strong>{' '}
+                              {value !== null && value !== undefined ? String(value) : 'N/A'}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Show environmental data if available */}
+                  {(alert.noise_level_db || alert.air_quality_index) && (
+                    <div className="environmental-data">
+                      <h4>Environmental Data:</h4>
+                      <ul>
+                        {alert.noise_level_db && (
+                          <li><strong>Noise Level:</strong> {alert.noise_level_db.toFixed(1)} dB</li>
+                        )}
+                        {alert.air_quality_index && (
+                          <li><strong>Air Quality Index:</strong> {alert.air_quality_index}</li>
+                        )}
+                      </ul>
+                    </div>
                   )}
                 </div>
               </div>
-            ))}
-          </div>
+            );
+          })
         )}
       </div>
     </div>
   );
-};
+}
 
 export default HealthAlerts;
