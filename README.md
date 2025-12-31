@@ -1,6 +1,6 @@
 # VALOR – VA Disability Reporting & Health Evidence Platform
 
-VALOR is a veteran-focused health documentation and reporting system designed to make VA disability claims faster, clearer, and easier to approve. The platform continuously collects and organizes health and exposure data from service environments, transforming it into VA-ready medical evidence and AI-assisted disability reports. It does so through by tracking IoT sensors and environmental monitors. The platform processes battlefield health data through a Kafka streaming pipeline, stores it in Firestore, and provides commanders with a real-time dashboard for monitoring critical health alerts an generating AI-powered VA disability reports.
+VALOR is a veteran-focused health documentation and reporting system designed to make VA disability claims faster, clearer, and easier to approve. The platform continuously collects and organizes health and exposure data from service environments, transforming it into VA-ready medical evidence and AI-assisted disability reports. It does so through by tracking IoT sensors and environmental monitors. The platform processes battlefield health data through a Kafka streaming pipeline, stores it in Firestore, and provides commanders with a real-time dashboard for generating AI-powered VA disability reports.
 
 **Live Demo:** [https://valorstream-demo-1.web.app](https://valorstream-demo-1.web.app)
 
