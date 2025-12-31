@@ -22,6 +22,51 @@ ai_analyzer = AIAnalyzer()
 report_generator = ReportGenerator(db)
 confluent_metrics = ConfluentMetrics()
 
+def add_cors_headers(response):
+    """Add CORS headers to allow frontend access"""
+    headers = {
+        'Access-Control-Allow-Origin': '*',  # Change to your domain in production: 'https://your-domain.com'
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Max-Age': '3600'
+    }
+    
+    # If response is a tuple, add headers
+    if isinstance(response, tuple):
+        return (response[0], response[1], headers)
+    
+    # If response is a Response object
+    if hasattr(response, 'headers'):
+        for key, value in headers.items():
+            response.headers[key] = value
+        return response
+    
+    # Otherwise return with headers
+    return (response, 200, headers)
+
+
+# API Key Authentication (OPTIONAL - uncomment to enable)
+def verify_api_key(request):
+    """
+    Verify API key from request headers
+    Uncomment this function and the checks below to enable authentication
+    """
+    # Get API key from environment variable
+    VALID_API_KEY = os.environ.get('API_KEY', 'your-secret-api-key-here')
+    
+    # Get API key from request header
+    request_api_key = request.headers.get('Authorization', '')
+    
+    # Remove 'Bearer ' prefix if present
+    if request_api_key.startswith('Bearer '):
+        request_api_key = request_api_key[7:]
+    
+    # Verify API key
+    if request_api_key != VALID_API_KEY:
+        return False
+    
+    return True
+
 @functions_framework.http
 def get_health_alerts(request):
     """Get all active health alerts"""
