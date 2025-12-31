@@ -52,7 +52,10 @@ class BattlefieldEventProducer:
             print(f'✅ Message delivered to {msg.topic()} [{msg.partition()}] @ offset {msg.offset()}')
     
     def generate_event(self, soldier_id, deployment_day):
-        """Generate a realistic battlefield event"""
+        """
+        Generate a realistic battlefield event
+        UNCHANGED - keeps your original event generation logic
+        """
         
         # Random walk from base coordinates
         lat = self.base_lat + random.uniform(-0.02, 0.02)
@@ -120,16 +123,17 @@ class BattlefieldEventProducer:
         }
     
     def send_event(self, event):
+        """Send event to Kafka - UNCHANGED"""
         try:
             self.producer.produce(
-            topic='battlefield-events-raw',
-            key=event['soldier_id'],
-            value=self.avro_serializer(
-                event,
-                SerializationContext('battlefield-events-raw', MessageField.VALUE)
-            ),
-            on_delivery=self.delivery_report
-        )
+                topic='battlefield-events-raw',
+                key=event['soldier_id'],
+                value=self.avro_serializer(
+                    event,
+                    SerializationContext('battlefield-events-raw', MessageField.VALUE)
+                ),
+                on_delivery=self.delivery_report
+            )
             self.producer.poll(0)
         except Exception as e:
             print(f"❌ Error producing message: {e}")
@@ -137,31 +141,102 @@ class BattlefieldEventProducer:
             traceback.print_exc()
 
     def simulate_deployment(self, soldier_id, duration_hours=8, events_per_hour=3):
-        """Simulate a full deployment day"""
+        """
+        Simulate a full deployment day
+        ENHANCED: Added better logging and summary stats
+        """
         print(f"\n🎖️  Starting deployment simulation for {soldier_id}")
         print(f"Duration: {duration_hours} hours | Events per hour: {events_per_hour}")
         print("-" * 60)
         
         total_events = duration_hours * events_per_hour
         
+        # Track event statistics
+        severity_counts = {'LOW': 0, 'MEDIUM': 0, 'HIGH': 0, 'CRITICAL': 0}
+        event_type_counts = {}
+        
         for i in range(total_events):
             event = self.generate_event(soldier_id, deployment_day=1)
             self.send_event(event)
             
+            # Track statistics
+            severity_counts[event['severity']] += 1
+            event_type_counts[event['event_type']] = event_type_counts.get(event['event_type'], 0) + 1
+            
+            # Enhanced logging for important events
             if event['severity'] in ['HIGH', 'CRITICAL']:
                 print(f"⚠️  {event['event_type']} - Severity: {event['severity']}")
+                if event.get('noise_level_db'):
+                    print(f"   📊 Noise: {event['noise_level_db']:.1f} dB")
+                if event.get('air_quality_index'):
+                    print(f"   📊 AQI: {event['air_quality_index']}")
             
+            # Shorter delay for more realistic real-time simulation
             time.sleep(0.5)
         
         self.producer.flush()
+        
+        # Print summary
         print(f"\n✅ Deployment simulation complete: {total_events} events sent")
+        print(f"\n📊 Severity Summary:")
+        for severity, count in severity_counts.items():
+            if count > 0:
+                percentage = (count / total_events) * 100
+                print(f"   {severity}: {count} ({percentage:.1f}%)")
+        
+        print(f"\n📋 Top Event Types:")
+        sorted_events = sorted(event_type_counts.items(), key=lambda x: x[1], reverse=True)
+        for event_type, count in sorted_events[:5]:
+            print(f"   {event_type}: {count}")
+
+    def simulate_continuous(self, soldiers, interval_seconds=30):
+        """
+        ENHANCEMENT: New method for continuous event generation
+        Simulates ongoing operations with events every interval_seconds
+        Perfect for dashboard real-time testing
+        """
+        print(f"\n🔄 Starting continuous simulation")
+        print(f"Soldiers: {', '.join(soldiers)}")
+        print(f"Event interval: {interval_seconds} seconds")
+        print(f"Press Ctrl+C to stop")
+        print("-" * 60)
+        
+        event_count = 0
+        
+        try:
+            while True:
+                # Random soldier
+                soldier_id = random.choice(soldiers)
+                
+                # Generate and send event
+                event = self.generate_event(soldier_id, deployment_day=1)
+                self.send_event(event)
+                event_count += 1
+                
+                # Log
+                severity_icon = '🔴' if event['severity'] == 'CRITICAL' else '🟠' if event['severity'] == 'HIGH' else '🟡' if event['severity'] == 'MEDIUM' else '🟢'
+                print(f"{severity_icon} Event #{event_count}: {event['event_type']} - {soldier_id} ({event['severity']})")
+                
+                # Wait
+                time.sleep(interval_seconds)
+                
+        except KeyboardInterrupt:
+            print(f"\n\n🛑 Continuous simulation stopped")
+            print(f"Total events generated: {event_count}")
+            self.producer.flush()
 
 if __name__ == "__main__":
     producer = BattlefieldEventProducer()
     
+    # Your original soldiers
     soldiers = ["SGT_JOHNSON_001", "CPL_MARTINEZ_002", "PFC_WILLIAMS_003"]
     
-    for soldier in soldiers:
-        producer.simulate_deployment(soldier, duration_hours=2, events_per_hour=4)
-        print("\n" + "="*60 + "\n")
-
+    # OPTION 1: Original batch simulation (YOUR ORIGINAL CODE)
+    # Uncomment to use:
+    # for soldier in soldiers:
+    #     producer.simulate_deployment(soldier, duration_hours=2, events_per_hour=4)
+    #     print("\n" + "="*60 + "\n")
+    
+    # OPTION 2: Continuous simulation (NEW - great for dashboard testing)
+    # Events every 30 seconds for real-time dashboard updates
+    producer.simulate_continuous(soldiers, interval_seconds=30)

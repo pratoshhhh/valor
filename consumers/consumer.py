@@ -3,6 +3,7 @@ from confluent_kafka.schema_registry import SchemaRegistryClient
 from confluent_kafka.schema_registry.avro import AvroDeserializer
 from confluent_kafka.serialization import SerializationContext, MessageField
 from google.cloud import firestore
+from datetime import datetime
 import sys
 import os
 
@@ -39,7 +40,7 @@ class BattlefieldEventConsumer:
             soldier_id = event_data['soldier_id']
             event_id = event_data['event_id']
             
-            # Store in Firestore
+            # Store in Firestore (YOUR ORIGINAL STRUCTURE - KEPT AS IS)
             doc_ref = self.db.collection('soldiers').document(soldier_id)\
                              .collection('service_record').document(event_id)
             
@@ -66,21 +67,84 @@ class BattlefieldEventConsumer:
                 print(f"⚠️  HIGH RISK: {event_data['event_type']} - {soldier_id}")
                 self.create_alert(soldier_id, event_data)
             
+            # ENHANCEMENT: Update soldier health score for dashboard
+            self.update_soldier_health_score(soldier_id, event_data)
+            
         except Exception as e:
             print(f"❌ Error processing event: {e}")
     
     def create_alert(self, soldier_id, event_data):
-        """Create alert in Firestore"""
-        alert_ref = self.db.collection('health_alerts').document()
+        """Create alert in Firestore - ENHANCED for dashboard compatibility"""
+        # Store alert with specific event_id as document ID (for dashboard queries)
+        alert_ref = self.db.collection('health_alerts').document(event_data['event_id'])
+        
+        # Convert timestamp to ISO format for dashboard
+        timestamp_ms = event_data.get('timestamp', int(datetime.utcnow().timestamp() * 1000))
+        timestamp_iso = datetime.fromtimestamp(timestamp_ms / 1000).isoformat() + 'Z'
+        
+        # Get location info
+        location = f"{event_data.get('latitude', 0):.4f}, {event_data.get('longitude', 0):.4f}"
+        
         alert_ref.set({
-            'soldier_id': soldier_id,
             'event_id': event_data['event_id'],
-            'alert_type': 'IMMEDIATE_MEDICAL_EVALUATION',
+            'soldier_id': soldier_id,
+            'event_type': event_data['event_type'],
             'severity': event_data['severity'],
-            'message': f"Soldier exposed to {event_data['event_type']}",
+            'timestamp': timestamp_iso,  # ISO format for dashboard
+            'location': location,  # Readable location string
+            'status': 'pending',  # For dashboard filtering
+            'details': {
+                'noise_level_db': event_data.get('noise_level_db'),
+                'air_quality_index': event_data.get('air_quality_index'),
+                'latitude': event_data.get('latitude'),
+                'longitude': event_data.get('longitude'),
+                'description': f"Soldier exposed to {event_data['event_type']}"
+            },
             'created_at': firestore.SERVER_TIMESTAMP,
-            'resolved': False
+            'resolved': False,
+            
+            # LEGACY FIELDS (for backward compatibility with your original system)
+            'alert_type': 'IMMEDIATE_MEDICAL_EVALUATION',
+            'message': f"Soldier exposed to {event_data['event_type']}"
         })
+        
+        print(f"🚨 Created dashboard alert: {event_data['event_id']}")
+    
+    def update_soldier_health_score(self, soldier_id, event_data):
+        """
+        ENHANCEMENT: Update soldier's health score in main soldiers collection
+        This makes the dashboard show real-time health data
+        """
+        try:
+            soldier_ref = self.db.collection('soldiers').document(soldier_id)
+            soldier_doc = soldier_ref.get()
+            
+            if soldier_doc.exists:
+                # Get current health score
+                current_score = soldier_doc.to_dict().get('health_score', 85)
+                
+                # Decrease health score based on severity
+                if event_data['severity'] == 'CRITICAL':
+                    new_score = max(current_score - 10, 0)
+                elif event_data['severity'] == 'HIGH':
+                    new_score = max(current_score - 5, 0)
+                elif event_data['severity'] == 'MEDIUM':
+                    new_score = max(current_score - 2, 0)
+                else:
+                    new_score = max(current_score - 1, 0)
+                
+                # Update the score
+                soldier_ref.update({
+                    'health_score': new_score,
+                    'last_event_timestamp': firestore.SERVER_TIMESTAMP
+                })
+                
+                print(f"📊 Updated {soldier_id} health score: {current_score} → {new_score}")
+            else:
+                print(f"⚠️  Soldier {soldier_id} not found in main collection")
+                
+        except Exception as e:
+            print(f"⚠️  Could not update health score: {e}")
     
     def start_consuming(self, topics=['battlefield-events-raw']):
         """Start consuming from Kafka topics"""
@@ -140,4 +204,3 @@ class BattlefieldEventConsumer:
 if __name__ == "__main__":
     consumer = BattlefieldEventConsumer()
     consumer.start_consuming()
-
