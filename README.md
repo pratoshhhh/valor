@@ -149,6 +149,8 @@ valor/
 └── inspect_firestore.py          # Script to inspect Firestore contents
 ---
 
+```
+
 ## Prerequisites
 
 - **Node.js** (v16+)
