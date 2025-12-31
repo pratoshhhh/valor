@@ -1,95 +1,108 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { User, Search, MapPin, Shield, Activity, AlertTriangle } from 'lucide-react';
 import apiService from '../services/api';
 
 const Soldiers = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [soldiers, setSoldiers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock soldier data - in production, fetch from API
-    const mockSoldiers = [
-      {
-        soldier_id: 'SGT_JOHNSON_001',
-        name: 'Michael Johnson',
-        rank: 'Sergeant',
-        unit: '1st Battalion, 5th Marines',
-        deployment_location: 'Forward Operating Base Delta',
-        status: 'active',
-        health_score: 87,
-        alerts_count: 2,
-        last_alert: '2 hours ago',
-        deployment_start: '2024-06-15'
-      },
-      {
-        soldier_id: 'CPL_MARTINEZ_002',
-        name: 'Carlos Martinez',
-        rank: 'Corporal',
-        unit: '2nd Battalion, 7th Infantry',
-        deployment_location: 'Camp Phoenix',
-        status: 'active',
-        health_score: 92,
-        alerts_count: 0,
-        last_alert: 'None',
-        deployment_start: '2024-08-20'
-      },
-      {
-        soldier_id: 'PFC_WILLIAMS_003',
-        name: 'Sarah Williams',
-        rank: 'Private First Class',
-        unit: '3rd Battalion, 1st Marines',
-        deployment_location: 'Base Medical',
-        status: 'medical',
-        health_score: 64,
-        alerts_count: 5,
-        last_alert: '30 mins ago',
-        deployment_start: '2024-05-10'
-      },
-      {
-        soldier_id: 'SFC_DAVIS_004',
-        name: 'Robert Davis',
-        rank: 'Sergeant First Class',
-        unit: '1st Special Forces Group',
-        deployment_location: 'Training Ground Charlie',
-        status: 'active',
-        health_score: 95,
-        alerts_count: 1,
-        last_alert: '1 day ago',
-        deployment_start: '2024-03-01'
-      },
-      {
-        soldier_id: 'SGT_BROWN_005',
-        name: 'Jennifer Brown',
-        rank: 'Sergeant',
-        unit: '82nd Airborne Division',
-        deployment_location: 'Patrol Route 7',
-        status: 'active',
-        health_score: 78,
-        alerts_count: 3,
-        last_alert: '4 hours ago',
-        deployment_start: '2024-07-12'
-      },
-      {
-        soldier_id: 'CPT_ANDERSON_006',
-        name: 'James Anderson',
-        rank: 'Captain',
-        unit: '10th Mountain Division',
-        deployment_location: 'Command Center Alpha',
-        status: 'active',
-        health_score: 89,
-        alerts_count: 0,
-        last_alert: 'None',
-        deployment_start: '2024-04-05'
-      }
-    ];
+    fetchSoldiers();
+    // Update search term if URL param changes
+    setSearchTerm(searchParams.get('search') || '');
+  }, [searchParams]);
 
-    setSoldiers(mockSoldiers);
-    setLoading(false);
-  }, []);
+  const fetchSoldiers = async () => {
+    try {
+      // In production, this would fetch from your API
+      // For now, using mock data that matches Firestore structure
+      const mockSoldiers = [
+        {
+          soldier_id: 'SGT_JOHNSON_001',
+          name: 'Michael Johnson',
+          rank: 'Sergeant',
+          unit: '1st Battalion, 5th Marines',
+          deployment_location: 'Forward Operating Base Delta',
+          status: 'active',
+          health_score: 87,
+          alerts_count: 2,
+          last_alert: '2 hours ago',
+          deployment_start: '2024-06-15'
+        },
+        {
+          soldier_id: 'CPL_MARTINEZ_002',
+          name: 'Carlos Martinez',
+          rank: 'Corporal',
+          unit: '2nd Battalion, 7th Infantry',
+          deployment_location: 'Camp Phoenix',
+          status: 'active',
+          health_score: 92,
+          alerts_count: 0,
+          last_alert: 'None',
+          deployment_start: '2024-08-20'
+        },
+        {
+          soldier_id: 'PFC_WILLIAMS_003',
+          name: 'Sarah Williams',
+          rank: 'Private First Class',
+          unit: '3rd Battalion, 1st Marines',
+          deployment_location: 'Base Medical',
+          status: 'medical',
+          health_score: 64,
+          alerts_count: 5,
+          last_alert: '30 mins ago',
+          deployment_start: '2024-05-10'
+        },
+        {
+          soldier_id: 'SFC_DAVIS_004',
+          name: 'Robert Davis',
+          rank: 'Sergeant First Class',
+          unit: '1st Special Forces Group',
+          deployment_location: 'Training Ground Charlie',
+          status: 'active',
+          health_score: 95,
+          alerts_count: 1,
+          last_alert: '1 day ago',
+          deployment_start: '2024-03-01'
+        },
+        {
+          soldier_id: 'SGT_BROWN_005',
+          name: 'Jennifer Brown',
+          rank: 'Sergeant',
+          unit: '82nd Airborne Division',
+          deployment_location: 'Patrol Route 7',
+          status: 'active',
+          health_score: 78,
+          alerts_count: 3,
+          last_alert: '4 hours ago',
+          deployment_start: '2024-07-12'
+        },
+        {
+          soldier_id: 'CPT_ANDERSON_006',
+          name: 'James Anderson',
+          rank: 'Captain',
+          unit: '10th Mountain Division',
+          deployment_location: 'Command Center Alpha',
+          status: 'active',
+          health_score: 89,
+          alerts_count: 0,
+          last_alert: 'None',
+          deployment_start: '2024-04-05'
+        }
+      ];
+
+      setSoldiers(mockSoldiers);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching soldiers:', error);
+      setLoading(false);
+    }
+  };
 
   const filteredSoldiers = soldiers.filter(soldier =>
     soldier.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -183,6 +196,16 @@ const Soldiers = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
+        {searchTerm && (
+          <p style={{ 
+            marginTop: '12px', 
+            fontSize: '14px', 
+            color: 'var(--text-secondary)' 
+          }}>
+            Showing {filteredSoldiers.length} of {soldiers.length} soldiers
+            {searchTerm && ` matching "${searchTerm}"`}
+          </p>
+        )}
       </div>
 
       {/* Soldiers Grid */}
@@ -365,7 +388,14 @@ const Soldiers = () => {
         <div className="card">
           <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
             <User size={48} style={{ opacity: 0.3, marginBottom: '16px' }} />
-            <p>No soldiers found matching your search</p>
+            <p>No soldiers found matching "{searchTerm}"</p>
+            <button 
+              className="btn btn-secondary"
+              onClick={() => setSearchTerm('')}
+              style={{ marginTop: '16px' }}
+            >
+              Clear Search
+            </button>
           </div>
         </div>
       )}

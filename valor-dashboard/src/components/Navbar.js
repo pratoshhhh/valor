@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Bell, User } from 'lucide-react';
 
 const Navbar = ({ title }) => {
+  const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -11,6 +14,18 @@ const Navbar = ({ title }) => {
 
     return () => clearInterval(timer);
   }, []);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      // Navigate to soldiers page with search parameter
+      navigate(`/soldiers?search=${encodeURIComponent(searchTerm)}`);
+    }
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
 
   return (
     <div className="top-navbar">
@@ -34,20 +49,26 @@ const Navbar = ({ title }) => {
       </div>
 
       <div className="top-actions">
-        <div className="search-box">
+        <form onSubmit={handleSearch} className="search-box">
           <Search className="search-icon" size={18} />
           <input 
             type="text" 
             className="search-input" 
             placeholder="Search soldiers, alerts..." 
+            value={searchTerm}
+            onChange={handleSearchChange}
           />
-        </div>
+        </form>
 
-        <button className="btn-icon">
+        <button className="btn-icon" title="Notifications">
           <Bell size={20} />
         </button>
 
-        <button className="btn-icon">
+        <button 
+          className="btn-icon" 
+          title="Profile"
+          onClick={() => navigate('/soldiers')}
+        >
           <User size={20} />
         </button>
       </div>
